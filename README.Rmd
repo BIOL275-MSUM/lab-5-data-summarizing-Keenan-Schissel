@@ -1,0 +1,90 @@
+---
+title: "Lab 5"
+author: "keenan schissel"
+date: "2/23/2021"
+output: html_document
+---
+
+Packages
+```{r}
+library(tidyverse)
+```
+
+Rename each variable so that it is all lower-case and uses an underscore _ instead of a period . in the name (the recommended coding style in the tidyverse style guide). Print the resulting table.
+```{r}
+Q1<-rename(iris,sepal_length=Sepal.Length,sepal_width=Sepal.Width,petal_length=Petal.Length,petal_width=Petal.Width,species=Species)
+Q1
+```
+
+Convert the four numerical variables from cm to mm by multiplying by 10. Print the resulting table.
+```{r}
+Q2<-select(Q1, sepal_length, sepal_width, petal_length, petal_width)
+Q2
+mutate(Q1, Q2 = Q2 * 10)
+```
+
+Calculate sepal area and petal area (area is equal to length multiplied by width). Print a table with only the variables sepal area, petal area, and species.
+```{r}
+Q3 <-mutate(Q1, sepal_area=sepal_length*sepal_width,petal_area=petal_length*petal_width)
+Q3
+Q3.5 <-select(Q3,sepal_area,petal_area)
+Q3.5
+```
+
+Calculate the following statistics for the entire dataset from the sepal length variable and print the resulting table:
+```{r}
+summarize(
+  Q2,
+  sampl_size = n(),
+  max=max(sepal_length),
+  min=min(sepal_length),
+  range=range(sepal_length),
+  median=median(sepal_length),
+  q1=quantile(sepal_length, probs = 0.25),
+  q2=quantile(sepal_length, probs = 0.75),
+  IQR=IQR(sepal_length)
+)
+```
+
+Calculate the following statistics for each species from the petal width variable and print the resulting table:
+```{r}
+Q5<-group_by(Q1,species)
+
+iris_sum<-summarize(
+  Q5,
+  mean=mean(petal_width),
+  sampl_size = n(),
+  sd=sd(petal_width),
+  var=var(petal_width),
+  sem=sd / sqrt(sampl_size), 
+  ci_upper=mean+2 * sem,
+  ci_lower=mean-2 * sem)
+iris_sum
+```
+
+Visualize the relationship between petal length and species using a strip plot.
+```{r}
+ggplot(data = Q1) + 
+  geom_jitter(mapping = aes(x=species,y=petal_width))
+```
+
+Starting with the previous graph, add the mean and 95% confidence interval for each species
+```{r}
+ggplot(data=Q1) +
+  geom_jitter(mapping=aes(x=species,y=petal_width)) +
+  geom_crossbar(
+    data=iris_sum,
+    mapping=aes(
+      x=species,
+      y=mean,
+      ymax=ci_upper,
+      ymin=ci_lower),
+    color="red"
+  )
+```
+
+Visualize the relationship between petal length, petal width, and species using a scatterplot. Map the two numerical variables to the x and y axes and map species to the color and shape aesthetics.
+```{r}
+ggplot(data=Q1) +
+  geom_point(mapping=aes(x=petal_length,y=petal_width,color=species))
+```
