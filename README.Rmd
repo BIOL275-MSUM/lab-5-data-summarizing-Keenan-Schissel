@@ -88,3 +88,7 @@ Visualize the relationship between petal length, petal width, and species using 
 ggplot(data=Q1) +
   geom_point(mapping=aes(x=petal_length,y=petal_width,color=species))
 ```
+
+```{r session-info}
+sessioninfo::session_info()
+```
