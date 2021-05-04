@@ -2,7 +2,7 @@
 title: "LAb 5"
 author: "keenan schissel"
 date: "2/23/2021"
-output: html_document
+output: github_document
 ---
 
 Packages
